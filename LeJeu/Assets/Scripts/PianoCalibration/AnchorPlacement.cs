@@ -85,28 +85,36 @@ public class AnchorPlacement : MonoBehaviour
 
     public void PlaceThirdObject()
     {
-        // Récupérer les positions des ancres
+        // Récupérer les positions et rotations des ancres
         Vector3 leftAnchorPosition = leftAnchor.transform.position;
         Vector3 rightAnchorPosition = rightAnchor.transform.position;
+        Quaternion leftAnchorRotation = leftAnchor.transform.rotation;
+        Quaternion rightAnchorRotation = rightAnchor.transform.rotation;
 
         // Calculer le point central
         Vector3 centerPosition = (leftAnchorPosition + rightAnchorPosition) / 2f;
 
+        // Calculer la direction entre les ancres
+        Vector3 direction = (rightAnchorPosition - leftAnchorPosition).normalized;
+        
+        // Calculer la rotation pour aligner le piano
+        Quaternion targetRotation = Quaternion.LookRotation(direction, Vector3.up);
+        
+        // Ajouter une rotation de 90 degrés sur l'axe Y
+        targetRotation *= Quaternion.Euler(0, 90, 0);
+        
         // Calculer la distance entre les ancres (largeur)
         float width = Vector3.Distance(leftAnchorPosition, rightAnchorPosition);
 
-        // Instancier ou mettre à jour le troisième objet
-        // Par exemple, si tu as un prefab pour le piano :
-        GameObject thirdObject = Instantiate(pianoPrefab, centerPosition, Quaternion.identity);
+        // Instancier le piano avec la position et rotation calculées
+        GameObject thirdObject = Instantiate(pianoPrefab, centerPosition, targetRotation);
         
-        // Adapter la largeur du piano (supposons que le piano a un Transform ou un RectTransform)
-        // Si c'est un RectTransform (pour un UI) :
+        // Adapter la largeur du piano
         RectTransform rectTransform = thirdObject.GetComponent<RectTransform>();
         if (rectTransform != null)
         {
             rectTransform.sizeDelta = new Vector2(width, rectTransform.sizeDelta.y);
         }
-        // Sinon, si c'est un Transform 3D :
         else
         {
             thirdObject.transform.localScale = new Vector3(width, thirdObject.transform.localScale.y, thirdObject.transform.localScale.z);
