@@ -1,30 +1,39 @@
 using UnityEngine;
 using Oculus.Interaction;
-using Oculus.Voice.Windows;
+using Oculus.Interaction.Input;
 
 public class AnchorPlacement : MonoBehaviour
 {
     public GameObject anchorPrefab;
-    public Transform leftHandTrackingTransform;
-    public Transform rightHandTrackingTransform;
     public GameObject canvaCalibrationPiano;
     public GameObject canvaAncreGauche;
     public GameObject canvaAncreDroite;
     public GameObject menuDuJeu;
     public GameObject pianoPrefab;
 
+
     private GameObject leftAnchor;
     private GameObject rightAnchor;
+
+    private IHand _leftHand;
+    private IHand _rightHand;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        // Trouver la référence de la main gauche si elle n'est pas assignée
-        if (leftHandTrackingTransform == null)
-            leftHandTrackingTransform = GameObject.Find("LeftHandAnchor")?.transform;
-
-        if (rightHandTrackingTransform == null)
-            rightHandTrackingTransform = GameObject.Find("RightHandAnchor")?.transform;
+        // Trouver les références des mains
+        var hands = FindObjectsOfType<Hand>();
+        foreach (var hand in hands)
+        {
+            if (hand.Handedness == Handedness.Left)
+            {
+                _leftHand = hand;
+            }
+            else if (hand.Handedness == Handedness.Right)
+            {
+                _rightHand = hand;
+            }
+        }
     }
 
     public void CalibratePiano()
@@ -40,16 +49,10 @@ public class AnchorPlacement : MonoBehaviour
     }
     public void CreateSpacialAnchorLeft()
     {
-        Vector3 leftHandPosition = Vector3.zero;
-    
-
-        if (leftHandTrackingTransform != null)
+        if (_leftHand != null && _leftHand.GetJointPose(HandJointId.HandIndexTip, out Pose pose))
         {
-            leftHandPosition = leftHandTrackingTransform.position;
-           
+            leftAnchor = Instantiate(anchorPrefab, pose.position, pose.rotation);
         }
-
-         leftAnchor = Instantiate(anchorPrefab, leftHandPosition, Quaternion.identity);
 
         if (canvaAncreGauche != null)
         {
@@ -63,16 +66,10 @@ public class AnchorPlacement : MonoBehaviour
 
     public void CreateSpacialAnchorRight()
     {
-        Vector3 rightHandPosition = Vector3.zero;
-        
-
-        if (leftHandTrackingTransform != null)
+        if (_rightHand != null && _rightHand.GetJointPose(HandJointId.HandIndexTip, out Pose pose))
         {
-            rightHandPosition = rightHandTrackingTransform.position;
-
+            rightAnchor = Instantiate(anchorPrefab, pose.position, pose.rotation);
         }
-
-         rightAnchor = Instantiate(anchorPrefab, rightHandPosition, Quaternion.identity);
 
         if (canvaAncreDroite != null)
         {
@@ -82,6 +79,7 @@ public class AnchorPlacement : MonoBehaviour
         {
             menuDuJeu.SetActive(true);
         }
+
         PlaceThirdObject();
     }
 
@@ -114,6 +112,5 @@ public class AnchorPlacement : MonoBehaviour
             thirdObject.transform.localScale = new Vector3(width, thirdObject.transform.localScale.y, thirdObject.transform.localScale.z);
         }
     }
-
 }
 
