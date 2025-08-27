@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
 public class SimpleInputFieldManager : MonoBehaviour
@@ -92,7 +93,30 @@ public class SimpleInputFieldManager : MonoBehaviour
                     FocusField(fieldIndex + 1);
                 }
             });
+            
+            // Ajouter un EventTrigger pour détecter les clics
+            AddClickDetection(inputFields[i], fieldIndex);
         }
+    }
+    
+    void AddClickDetection(InputField inputField, int fieldIndex)
+    {
+        // Ajouter un EventTrigger si il n'existe pas déjà
+        EventTrigger trigger = inputField.gameObject.GetComponent<EventTrigger>();
+        if (trigger == null)
+        {
+            trigger = inputField.gameObject.AddComponent<EventTrigger>();
+        }
+        
+        // Créer l'événement de clic
+        EventTrigger.Entry entry = new EventTrigger.Entry();
+        entry.eventID = EventTriggerType.PointerClick;
+        entry.callback.AddListener((data) => {
+            FocusField(fieldIndex);
+        });
+        
+        // Ajouter l'événement au trigger
+        trigger.triggers.Add(entry);
     }
     
     public void FocusField(int index)
