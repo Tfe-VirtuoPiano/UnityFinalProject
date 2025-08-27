@@ -6474,6 +6474,10 @@ MonoBehaviour:
   loginButton: {fileID: 541333267}
   errorText: {fileID: 1904622099}
   sceneTransitionManager: {fileID: 1943036232}
+  enableAutoLogin: 1
+  autoLoginEmail: ldevroye1@gmail.com
+  autoLoginPassword: Lilian123
+  autoLoginDelay: 2
 --- !u!1 &852256609
 GameObject:
   m_ObjectHideFlags: 0
@@ -11067,6 +11071,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b06b0f89ed1ef0458dc72da58642471, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useLocalEnvironment: 1
+  localApiUrl: http://localhost:3000/api/auth/unity
+  deployedApiUrl: https://virtuo-piano.vercel.app/api/auth/unity
 --- !u!1 &1508522652
 GameObject:
   m_ObjectHideFlags: 0
